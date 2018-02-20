@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script type="text/javascript" src="messagingUtil.js"></script>
+        
+        <script>
+            "use strict";
+            
+            va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
+            
+            var resultName = null;
+            var dataTable = null;
+            var selections = null;
+            var map = null;
+            var options = {
+                chartArea: {
+                    left: 80,
+                    bottom: 40,
+                    width: "100%",
+                    height: "100%"
+                },
+                region: "US",
+                resolution: "provinces"
+            };
+            
+            google.charts.load("current", {
+                "packages": ["geochart"],
+                "mapsApiKey": "AIzaSyDDE2HOn4-uiSJB-yIP01pDz6zlNG0TqyU"
+            });
+            google.charts.setOnLoadCallback(onChartLoad);
+            
+            function onChartLoad() {
+                map = new google.visualization.GeoChart(document.getElementById("regions"));
+                
+                drawMap();
+            }
+            
+            function drawMap() {
+                if (map) {
+                    map.draw(dataTable, options);
+                }
+            }
+            
+            function onDataReceived(resultData) {
+                if (resultData) {
+                    resultName = resultData.resultName;
+                    dataTable = createDataTable(resultData);
+                }
+                
+                drawMap();
+            }
+            
+            function createDataTable(resultData) {
+                var arrayData;
+                if (resultData.data) {
+                    arrayData = resultData.data;
+                    if (resultData.columns) {
+                        arrayData.splice(0, 0, resultData.columns);
+                    }
+                }
+                return google.visualization.arrayToDataTable(arrayData);
+            }
+            
+        </script>
+    </head>
+    
+    <body>
+        <div id="regions"/>
+    </body>
+</html>

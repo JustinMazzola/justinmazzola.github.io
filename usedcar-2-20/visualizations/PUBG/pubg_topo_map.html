@@ -1,0 +1,72 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Example D3.js & Topojson Topographic Maps</title>
+    <meta name="description" content="D3.js | topojson | Topographic Maps">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        path {
+            fill: #ccc;
+            stroke: #fff;
+            stroke-width: .5px;
+        }
+        path:hover {
+            fill: red;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- HTML DIV Containers -->
+    <div id="World"></div> <div id="US"></div>
+    <!-- Load D3 & topojson libs -->>
+    <script src="d3.v3.min.js"></script>
+    <script src="topojson.v1.min.js"></script>
+
+    <script> // Eample 1 : World Map
+    var width = 960, height = 500;  // Set SVG canvas size
+    // Bind SVG canvas to DIV container
+    var svg1 = d3.select("#US").append("svg") 
+        //Set SVG canvas dimension attributes
+        .attr("width", width)
+        .attr("height", height);
+    // Define a topographic path object
+    var us_path = d3.geo.path()
+    // Load geo/topo data and exec callback function
+    d3.json("us.json", function(error, topology) {
+        svg1.selectAll("path")
+            // All the geospatial vector magic happens here
+            .data(topojson.feature(topology, topology.objects.counties).features)
+            // For each topographic feature appent a path object          
+          .enter().append("path")
+            // Assign the path object the features from the dataset
+            .attr("d", us_path);
+        });
+    </script>
+
+    <script> // Example 2 : US Map
+    var width = 960, height = 500;
+    var projection = d3.geo.mercator()
+        .center([0, 50 ])
+        .scale(100)
+        .rotate([0,0]);
+
+    var svg2 = d3.select("#World").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+    var world_path = d3.geo.path()
+        .projection(projection);
+
+    d3.json("world-110m.json", function(error, topology) {
+        svg2.selectAll("path")
+            .data(topojson.feature(topology, topology.objects.countries).features)
+          .enter().append("path")
+            .attr("d", world_path)
+        });
+
+      </script>
+</body>
+</html>
