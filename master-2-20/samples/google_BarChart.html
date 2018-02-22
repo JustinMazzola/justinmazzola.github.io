@@ -26,11 +26,11 @@
 
 		va.messagingUtil.setOnDataReceivedCallback(onDataReceived);
 
-		var _resultName = null;
-		var _dataTable = null;
-		var _selections = null;
-		var _bar = null;
-		var _options = {
+		var resultName = null;
+		var dataTable = null;
+		var selections = null;
+		var bar = null;
+		var options = {
 			chartArea: {
 				left: 80,
 				bottom: 40,  
@@ -49,27 +49,27 @@
 		
         function onChartLoad() 
 		{
-            _bar = new google.visualization.BarChart(document.getElementById('chart_div'));
-			google.visualization.events.addListener(_bar, 'ready', readyHandler);
-			google.visualization.events.addListener(_bar, 'select', selectHandler);
+            bar = new google.visualization.BarChart(document.getElementById('chart_div'));
+			google.visualization.events.addListener(bar, 'ready', readyHandler);
+			google.visualization.events.addListener(bar, 'select', selectHandler);
 			
 			drawChart();
         };
 		
 		function drawChart()
 		{
-			if (_bar)
-				_bar.draw(_dataTable, _options);
+			if (bar)
+				bar.draw(dataTable, _options);
 		}
 
         function onDataReceived(resultData)
         {
             if (resultData) 
 			{
-				_resultName = resultData.resultName;
-                _dataTable = va.googleHelper.createDataTable(resultData);
-				va.googleHelper.formatData(_dataTable, resultData);
-				_selections = va.googleHelper.initializeSelections(_dataTable, resultData);
+				resultName = resultData.resultName;
+                dataTable = createDataTable(resultData);
+				va.googleHelper.formatData(dataTable, resultData);
+				selections = va.googleHelper.initializeSelections(dataTable, resultData);
             }
 
 			drawChart();
@@ -77,17 +77,28 @@
 
 		function readyHandler(e) 
 		{
-			if (_selections && _selections.length > 0)
+			if (selections && selections.length > 0)
 			{
-				_bar.setSelection(_selections);
+				bar.setSelection(selections);
 			}
 		}
 
 		function selectHandler(e) 
 		{
-			var selection = _bar.getSelection();
-			va.messagingUtil.postSelectionMessage(_resultName, selection);
+			var selection = bar.getSelection();
+			va.messagingUtil.postSelectionMessage(resultName, selection);
 		}
+		
+		function createDataTable(resultData) {
+                var arrayData;
+                if (resultData.data) {
+                    arrayData = resultData.data;
+                    if (resultData.columns) {
+                        arrayData.splice(0, 0, resultData.columns);
+                    }
+                }
+                return google.visualization.arrayToDataTable(arrayData);
+            }
 
     </script>
 </head>
